@@ -8,9 +8,10 @@ from PIL import Image
 import numpy as np
 from torch.autograd import Variable
 from utils import *
+from ssim import ssim as compare_ssim
 from msssim import msssim as compare_mssim
-from skimage.measure import compare_ssim
 from skimage.measure import compare_psnr
+# from skimage.measure import compare_ssim
 
 parser = argparse.ArgumentParser(description='image-deblurring')
 
@@ -20,6 +21,7 @@ parser.add_argument('--exp_name', default='multi_skip', help='model to select')
 parser.add_argument('--gpu', type=int, required=True, help='gpu index')
 parser.add_argument('--n_threads', type=int, default=8, help='number of threads for data loading')
 parser.add_argument('--save', action='store_true', help='Save deblurred image')
+parser.add_argument('--padding', type=int, default=8, help='padding for computing scores')
 
 args = parser.parse_args()
 
@@ -34,10 +36,9 @@ else:
     os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
 
 
-def get_dataset(data_dir, patch_size=None, batch_size=1, n_threads=8, is_train=False, multi=False):
-    dataset = Gopro(data_dir, patch_size=patch_size, is_train=is_train, multi=multi)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
-                                             drop_last=True, shuffle=is_train, num_workers=int(n_threads))
+def get_dataset(data_dir, n_threads=8, multi=False):
+    dataset = Gopro(data_dir, is_train=False, multi=multi)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=1, shuffle=False, num_workers=int(n_threads))
     return dataloader
 
 
@@ -67,6 +68,8 @@ def test(args):
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
+    log_file = open(os.path.join(args.save_dir, args.exp_name, 'test_logs.txt'), 'w')
+
     total_psnr, total_ssim, total_mssim, cnt = 0, 0, 0, 0
     for batch, images in enumerate(dataloader):
         cnt += 1
@@ -84,11 +87,17 @@ def test(args):
         output_l1 = tensor_to_rgb(output_l1)
         target_s1 = tensor_to_rgb(target_s1)
 
-        img1 = output_l1[:, 8:-8, 8:-8].squeeze()
-        img2 = target_s1[:, 8:-8, 8:-8].squeeze()
+        p = args.padding
+        if p != 0:
+            img1 = output_l1[:, p:-p, p:-p].squeeze()
+            img2 = target_s1[:, p:-p, p:-p].squeeze()
+        else:
+            img1 = output_l1.squeeze()
+            img2 = target_s1.squeeze()
 
-        mssim = compare_mssim(torch.from_numpy(img1[None]), torch.from_numpy(img2[None])).numpy()
-        ssim = compare_ssim(img1.transpose(1, 2, 0), img2.transpose(1, 2, 0), multichannel=True)
+        mssim = compare_mssim(torch.from_numpy(img1[None]).cuda(), torch.from_numpy(img2[None]).cuda()).cpu().numpy()
+        ssim = compare_ssim(torch.from_numpy(img1[None]).cuda(), torch.from_numpy(img2[None]).cuda()).cpu().numpy()
+        # ssim = compare_ssim(img1.transpose(1, 2, 0), img2.transpose(1, 2, 0), multichannel=True)
         psnr = compare_psnr(img1, img2, 255)
 
         total_psnr += psnr
@@ -99,12 +108,18 @@ def test(args):
             out = Image.fromarray(np.uint8(output_l1.transpose(1, 2, 0)), mode='RGB')  # output of SRCNN
             out.save(os.path.join(output_dir, 'DB_%04d.png' % (cnt)))
 
-        print('Image %04d - PSNR %.2f - SSIM %.4f - MSSIM %.4f' % (cnt, psnr, ssim, mssim))
+        log = 'Image %04d - PSNR %.2f - SSIM %.4f - MSSIM %.4f' % (cnt, psnr, ssim, mssim)
+        print(log)
+        log_file.write(log + "\n")
 
     avg_psnr = total_psnr / (batch + 1)
     avg_ssim = total_ssim / (batch + 1)
     avg_mssim = total_mssim / (batch + 1)
-    print('Average - PSNR %.2f dB - SSIM %.4f - MSSIM %.4f' % (avg_psnr, avg_ssim, avg_mssim))
+    log = 'Average - PSNR %.2f dB - SSIM %.4f - MSSIM %.4f' % (avg_psnr, avg_ssim, avg_mssim)
+    print(log)
+    log_file.write(log + "\n")
+    log_file.close()
+
     if args.save:
         print('%04d images save at %s' % (cnt, output_dir))
 

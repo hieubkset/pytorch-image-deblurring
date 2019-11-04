@@ -4,7 +4,7 @@ import torch
 import sys
 import numpy as np
 from math import log10
-# from ssim import compare_ssim as ssim
+from ssim import SSIM
 from tensorboardX import SummaryWriter
 
 
@@ -23,13 +23,6 @@ def compute_psnr(img1, img2):
     mse = ((img1 - img2) ** 2).mean()
     psnr = 10 * log10(255 * 255 / (mse + 10 ** (-10)))
     return psnr
-
-
-# def compute_ssim(img1, img2):
-#     channels_ssim = []
-#     for i in range(3):
-#         channels_ssim.append(ssim(img1[i, :, :], img2[i, :, :], gaussian_weights=True, use_sample_covariance=False))
-#     return np.mean(channels_ssim)
 
 
 class SaveData():

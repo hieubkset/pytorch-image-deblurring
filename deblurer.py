@@ -50,25 +50,25 @@ def load_images(blur_img_path, multi):
     if os.path.exists(sharp_img_path):
         img_target = Image.open(sharp_img_path).convert('RGB')
         target_s1 = transforms.ToTensor()(img_target)
-        target_s1 = target_s1[None]
 
     img_input = Image.open(blur_img_path).convert('RGB')
     input_b1 = transforms.ToTensor()(img_input)
-    input_b1 = input_b1[None]
-
-    H = input_b1.size()[1]
-    W = input_b1.size()[2]
 
     if multi:
+        H = input_b1.size()[1]
+        W = input_b1.size()[2]
+
         input_b1 = transforms.ToPILImage()(input_b1)
 
         input_b2 = transforms.ToTensor()(transforms.Resize([int(H / 2), int(W / 2)])(input_b1))
         input_b3 = transforms.ToTensor()(transforms.Resize([int(H / 4), int(W / 4)])(input_b1))
 
         input_b1 = transforms.ToTensor()(input_b1)
-        return {'input_b1': input_b1, 'input_b2': input_b2, 'input_b3': input_b3, 'target_s1': target_s1}
+        return {'input_b1': input_b1[None], 'input_b2': input_b2[None], 'input_b3': input_b3[None],
+                'target_s1': target_s1[None]}
     else:
-        return {'input_b1': input_b1, 'target_s1': target_s1}
+        return {'input_b1': input_b1[None], 'target_s1': target_s1[None]}
+
 
 def test(args):
     params = load_paras(args)
