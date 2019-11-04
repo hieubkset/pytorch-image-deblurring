@@ -16,7 +16,7 @@ parser = argparse.ArgumentParser(description='image-deblurring')
 
 parser.add_argument('--data_dir', type=str, default='dataset/test', help='dataset directory')
 parser.add_argument('--save_dir', default='./result', help='data save directory')
-parser.add_argument('--exp_name', default='Net1', help='model to select')
+parser.add_argument('--exp_name', default='multi_skip', help='model to select')
 parser.add_argument('--gpu', type=int, required=True, help='gpu index')
 parser.add_argument('--n_threads', type=int, default=8, help='number of threads for data loading')
 parser.add_argument('--save', action='store_true', help='Save deblurred image')
@@ -84,15 +84,11 @@ def test(args):
         output_l1 = tensor_to_rgb(output_l1)
         target_s1 = tensor_to_rgb(target_s1)
 
-        img1 = output_l1[:, 8:-8, 8:-8]
-        img2 = target_s1[:, 8:-8, 8:-8]
+        img1 = output_l1[:, 8:-8, 8:-8].squeeze()
+        img2 = target_s1[:, 8:-8, 8:-8].squeeze()
 
-        mssim = compare_mssim(torch.from_numpy(img1[None]), torch.from_numpy(img2[None]))
-
-        img1 = img1.squeeze()
-        img2 = img2.squeeze()
-
-        ssim = compare_ssim(img1, img2, multichannel=True)
+        mssim = compare_mssim(torch.from_numpy(img1[None]), torch.from_numpy(img2[None])).numpy()
+        ssim = compare_ssim(img1.transpose(1, 2, 0), img2.transpose(1, 2, 0), multichannel=True)
         psnr = compare_psnr(img1, img2, 255)
 
         total_psnr += psnr
@@ -100,7 +96,7 @@ def test(args):
         total_mssim += mssim
 
         if args.save:
-            out = Image.fromarray(np.uint8(output_l1), mode='RGB')  # output of SRCNN
+            out = Image.fromarray(np.uint8(output_l1.transpose(1, 2, 0)), mode='RGB')  # output of SRCNN
             out.save(os.path.join(output_dir, 'DB_%04d.png' % (cnt)))
 
         print('Image %04d - PSNR %.2f - SSIM %.4f - MSSIM %.4f' % (cnt, psnr, ssim, mssim))
@@ -111,6 +107,7 @@ def test(args):
     print('Average - PSNR %.2f dB - SSIM %.4f - MSSIM %.4f' % (avg_psnr, avg_ssim, avg_mssim))
     if args.save:
         print('%04d images save at %s' % (cnt, output_dir))
+
 
 if __name__ == '__main__':
     test(args)

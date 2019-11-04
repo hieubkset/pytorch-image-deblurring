@@ -25,7 +25,8 @@ class ResidualBlock(nn.Module):
     def __init__(self, n_feats):
         super(ResidualBlock, self).__init__()
         modules_body = [
-            default_conv(n_feats, n_feats, 3, bias=True), nn.ReLU(inplace=True),
+            default_conv(n_feats, n_feats, 3, bias=True),
+            nn.ReLU(inplace=True),
             default_conv(n_feats, n_feats, 3, bias=True)
         ]
         self.body = nn.Sequential(*modules_body)
@@ -41,7 +42,9 @@ class SingleScaleNet(nn.Module):
         super(SingleScaleNet, self).__init__()
         self.is_skip = is_skip
 
-        modules_head = [default_conv(n_channels, n_feats, 5, bias=True), nn.ReLU(inplace=True)]
+        modules_head = [
+            default_conv(n_channels, n_feats, 5, bias=True),
+            nn.ReLU(inplace=True)]
 
         modules_body = [
             ResidualBlock(n_feats)

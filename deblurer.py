@@ -100,8 +100,10 @@ def test(args):
                 output_l1 = my_model(input_b1)
 
         output_l1 = tensor_to_rgb(output_l1)
+        output_l1 = output_l1.transpose(1, 2, 0)
         if target_s1 is not None:
             target_s1 = tensor_to_rgb(target_s1)
+            target_s1 = target_s1.transpose(1, 2, 0)
             psnr = compute_psnr(target_s1, output_l1)
             print('Image %s psnr %.2f dB' % (os.path.basename(img_path), psnr))
 

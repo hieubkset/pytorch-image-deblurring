@@ -114,7 +114,7 @@ def train(args):
     last_epoch = 0
     if args.finetuning:
         my_model, last_epoch = save.load_model(my_model)
-    start_epoch = last_epoch
+    start_epoch = last_epoch + 1
 
     # load dataset
     data_loader = get_dataset(args.data_dir, patch_size=args.patch_size, batch_size=args.batch_size,
