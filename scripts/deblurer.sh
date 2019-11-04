@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python deblurer.py --gpu 6 --exp_name single_skip --image "dataset/test/GOPR0384_11_00/blur/000001.png" "dataset/test/GOPR0384_11_05/blur/004001.png" "dataset/test/GOPR0385_11_01/blur/003011.png"
