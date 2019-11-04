@@ -1,0 +1,1 @@
+python test.py --gpu 6 --exp_name single_skip_lre4
