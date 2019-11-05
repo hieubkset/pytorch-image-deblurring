@@ -2,7 +2,7 @@
 
 This repository implement a multi-scale architecture for image deblurring.
 
-![Architecture](figs/architecture.png)
+![Architecture](figs/architecture.PNG)
 
 
 
