@@ -12,7 +12,8 @@ from utils import *
 
 parser = argparse.ArgumentParser(description='image-deblurring')
 
-parser.add_argument('--save_dir', default='./result', help='data save directory')
+parser.add_argument('--train_dir', default='./result', help='data save directory')
+parser.add_argument('--output_dir', default='demo', help='data save directory')
 parser.add_argument('--exp_name', default='Net1', help='model to select')
 parser.add_argument('--gpu', type=int, required=True, help='gpu index')
 parser.add_argument('--image', nargs='+', required=True, help='image to deblur')
@@ -38,7 +39,7 @@ def get_dataset(data_dir, patch_size=None, batch_size=1, n_threads=8, is_train=F
 
 
 def load_paras(args):
-    params_file_path = os.path.join(args.save_dir, args.exp_name, "params.txt")
+    params_file_path = os.path.join(args.train_dir, args.exp_name, "params.txt")
     with open(params_file_path, 'r') as f:
         str_params = f.read().strip()
     return ast.literal_eval(str_params)
@@ -79,10 +80,10 @@ def test(args):
         my_model = model.SingleScaleNet(n_feats=params['n_feats'], n_resblocks=params['n_resblocks'],
                                         is_skip=params['skip'])
     my_model.cuda()
-    my_model.load_state_dict(torch.load(os.path.join(args.save_dir, args.exp_name, 'model', 'model_lastest.pt')))
+    my_model.load_state_dict(torch.load(os.path.join(args.train_dir, args.exp_name, 'model', 'model_lastest.pt')))
     my_model.eval()
 
-    output_dir = os.path.join(args.save_dir, args.exp_name, 'deblurer_output')
+    output_dir = os.path.join(args.train_dir, args.exp_name, args.output_dir)
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
