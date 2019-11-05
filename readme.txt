@@ -1,7 +1,8 @@
 EE838A - Homework 2 - Image Deblurring
 
 This is an instruction for using this source code. The source code is tested on Ubuntu 16.04 using GPU Titan XP.
-Note that one GPU is required to run the code. Otherwise, you have to change code by yourself a little bit.
+Note that one GPU (12GB RAM) is required to run the code.
+Otherwise, you have to change code by yourself a little bit for using cpu.
 
 1. Dependencies:
 Python 3.5 or 3.6 are recommended.
