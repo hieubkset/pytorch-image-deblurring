@@ -10,7 +10,7 @@ This project is to implement a multi-scale architecture for image deblurring.
 
 ## Prerequiste
 
-The project is tested on Ubuntu 16.04, GPU Titan XP. Note that one GPU is required to run the code. Otherwise, you have to change code a little bit for using CPU. If you use CPU for training, it may slow.   So I recommend you using CPU/GPU strong enough and about 12G RAM. 
+The project is tested on Ubuntu 16.04, GPU Titan XP. Note that one GPU is required to run the code. Otherwise, you have to modify code a little bit for using CPU. If  using CPU for training, it may too slow.   So I recommend you using GPU strong enough and about 12G RAM. 
 
 ## Dependencies
 
@@ -43,6 +43,9 @@ I use GOPRO dataset for training and testing. __Download links__:  [GOPRO_Large]
 | image pairs | 2103     | 1111 | 3214  |
 
 After downloading dataset successfully, you need to put images in right folders. By default, you should have images on dataset/train and dataset/valid folders.
+
+![dataset_tree](figs/dataset_tree.png)
+
 If you change where stores dataset, it requires to change .sh files in scripts folder.
 You may find that 'ln -s' command is useful for preparing data.
 
