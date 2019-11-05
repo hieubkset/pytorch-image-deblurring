@@ -44,7 +44,7 @@ I use GOPRO dataset for training and testing. __Download links__:  [GOPRO_Large]
 
 After downloading dataset successfully, you need to put images in right folders. By default, you should have images on dataset/train and dataset/valid folders.
 
-![dataset_tree](figs/dataset_tree.png)
+![dataset_tree](figs/dataset_tree.PNG)
 
 If you change where stores dataset, it requires to change .sh files in scripts folder.
 You may find that 'ln -s' command is useful for preparing data.
