@@ -1,0 +1,2 @@
+{'data_dir': 'dataset/train', 'save_dir': './result', 'patch_size': 256, 'batch_size': 16, 'val_data_dir': 'dataset/valid', 'val_batch_size': 1, 'n_threads': 8, 'exp_name': 'single_skip', 'finetuning': False, 'multi': False, 'skip': True, 'n_resblocks': 9, 'n_feats': 64, 'lr': 1e-04, 'epochs': 800, 'lr_step_size': 600, 'lr_gamma': 0.1, 'period': 10, 'gpu': 7}
+
