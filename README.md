@@ -1,6 +1,6 @@
 # Multi-scale architecture for image deblurring
 
-This repository implement a multi-scale architecture for image deblurring.
+This project is to implement a multi-scale architecture for image deblurring.
 
 ![Architecture](figs/architecture.jpg)
 
