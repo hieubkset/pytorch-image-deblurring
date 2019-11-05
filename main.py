@@ -22,7 +22,8 @@ parser.add_argument('--patch_size', type=int, default=256, help='patch size')
 parser.add_argument('--batch_size', type=int, default=16, help='batch size for training')
 
 # validation data
-parser.add_argument('--val_data_dir', type=str, default='dataset/valid')  # modifying to validation data folder path
+# parser.add_argument('--val_data_dir', type=str, default='dataset/valid')  # modifying to validation data folder path
+parser.add_argument('--val_data_dir', type=str, default=None)
 parser.add_argument('--val_batch_size', type=int, default=1, help='batch size for validation')
 parser.add_argument('--n_threads', type=int, default=8, help='number of threads for data loading')
 
@@ -43,7 +44,7 @@ parser.add_argument('--lr_step_size', type=int, default=600, help='period of lea
 parser.add_argument('--lr_gamma', type=float, default=0.1, help='multiplicative factor of learning rate decay')
 
 #
-parser.add_argument('--period', type=int, default=10, help='period of evaluation')
+parser.add_argument('--period', type=int, default=1, help='period of evaluation')
 parser.add_argument('--gpu', type=int, required=True, help='gpu index')
 
 args = parser.parse_args()
@@ -119,7 +120,8 @@ def train(args):
     # load dataset
     data_loader = get_dataset(args.data_dir, patch_size=args.patch_size, batch_size=args.batch_size,
                               n_threads=args.n_threads, is_train=True, multi=args.multi)
-    valid_data_loader = get_dataset(args.val_data_dir, n_threads=args.n_threads, multi=args.multi)
+    if args.val_data_dir:
+        valid_data_loader = get_dataset(args.val_data_dir, n_threads=args.n_threads, multi=args.multi)
 
     for epoch in range(start_epoch, args.epochs):
         print("* Epoch {}/{}".format(epoch + 1, args.epochs))
@@ -153,17 +155,18 @@ def train(args):
         loss = total_loss / (batch + 1)
         save.add_scalar('train/loss', loss, epoch)
 
-        if epoch % args.period == 0:
-            my_model.eval()
-            psnr = validation(my_model, valid_data_loader, args.multi)
-            my_model.train()
+        if  epoch % args.period == 0:
+            if args.val_data_dir:
+                my_model.eval()
+                psnr = validation(my_model, valid_data_loader, args.multi)
+                my_model.train()
 
-            log = "Epoch {}/{} \t Learning rate: {:.5f} \t Train total_loss: {:.5f} \t * Val PSNR: {:.2f}\n".format(
-                epoch + 1, args.epochs, learning_rate, loss, psnr)
-            print(log)
-            save.save_log(log)
+                log = "Epoch {}/{} \t Learning rate: {:.5f} \t Train total_loss: {:.5f} \t * Val PSNR: {:.2f}\n".format(
+                    epoch + 1, args.epochs, learning_rate, loss, psnr)
+                print(log)
+                save.save_log(log)
+                save.add_scalar('valid/psnr', psnr, epoch)
             save.save_model(my_model, epoch)
-            save.add_scalar('valid/psnr', psnr, epoch)
         else:
             log = "Epoch {}/{} \t Learning rate: {:.5f} \t Train total_loss: {:.5f}\n".format(epoch + 1, args.epochs,
                                                                                               learning_rate, loss)
