@@ -15,6 +15,7 @@ The project is tested on Ubuntu 16.04, GPU Titan XP. Note that one GPU is requir
 ## Dependencies
 
 Python 3.5 or 3.6 are recommended.
+```
 tqdm==4.19.9
 numpy==1.17.3
 tensorflow==1.9.0
@@ -22,6 +23,7 @@ tensorboardX==1.9
 torch==1.0.0
 Pillow==6.1.0
 torchvision==0.2.2
+```
 
 ## Environment
 
