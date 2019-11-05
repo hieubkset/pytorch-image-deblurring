@@ -10,8 +10,7 @@ from torch.autograd import Variable
 from utils import *
 from ssim import ssim as compare_ssim
 from msssim import msssim as compare_mssim
-from skimage.measure import compare_psnr
-# from skimage.measure import compare_ssim
+from utils import compute_psnr as compare_psnr
 
 parser = argparse.ArgumentParser(description='image-deblurring')
 
@@ -95,10 +94,12 @@ def test(args):
             img1 = output_l1.squeeze()
             img2 = target_s1.squeeze()
 
-        mssim = compare_mssim(torch.from_numpy(img1[None]).cuda(), torch.from_numpy(img2[None]).cuda()).cpu().numpy()
-        ssim = compare_ssim(torch.from_numpy(img1[None]).cuda(), torch.from_numpy(img2[None]).cuda()).cpu().numpy()
-        # ssim = compare_ssim(img1.transpose(1, 2, 0), img2.transpose(1, 2, 0), multichannel=True)
-        psnr = compare_psnr(img1, img2, 255)
+        with torch.no_grad():
+            mssim = compare_mssim(torch.from_numpy(img1[None]).cuda(),
+                                  torch.from_numpy(img2[None]).cuda()).cpu().numpy()
+            ssim = compare_ssim(torch.from_numpy(img1[None] / 255.0).cuda(),
+                                torch.from_numpy(img2[None] / 255.0).cuda()).cpu().numpy()
+        psnr = compare_psnr(img1, img2)
 
         total_psnr += psnr
         total_ssim += ssim

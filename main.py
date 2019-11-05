@@ -37,7 +37,7 @@ parser.add_argument('--n_resblocks', type=int, default=9, help='number of residu
 parser.add_argument('--n_feats', type=int, default=64, help='number of feature maps')
 
 # optimization
-parser.add_argument('--lr', type=float, default=1e-3, help='learning rate')
+parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
 parser.add_argument('--epochs', type=int, default=800, help='number of epochs to train')
 parser.add_argument('--lr_step_size', type=int, default=600, help='period of learning rate decay')
 parser.add_argument('--lr_gamma', type=float, default=0.1, help='multiplicative factor of learning rate decay')
