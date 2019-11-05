@@ -2,7 +2,7 @@
 
 This repository implement a multi-scale architecture for image deblurring.
 
-![Architecture](figs/architecture.PNG)
+![Architecture](figs/architecture.jpg)
 
 
 
@@ -70,6 +70,10 @@ sh scripts/train.sh
 ```
 For training other models, you should uncommend lines in scripts/train.sh file.
 
+I used ADAM optimizer with a mini-batch size 16 for training. The learning rate is 1e-4. Total training takes 600 epochs to converge.  To prevent our network from overfitting, several data augmentation techniques are involved. In terms of geometric transformations, patches are randomly rotated by 90, 180, and 270 degrees. To take image degradations into account, saturation in HSV colorspace is multiplied by a random number within [0.8, 1.2].   
+
+![validation_curves](figs/validation_curve.png)
+
 ## Testing
 
 Run the following command
@@ -79,6 +83,20 @@ sh scripts/test.sh
 ```
 For testing other models, you should uncommend lines in scripts/test.sh file.
 
+|                 |      PSNR   |     SSIM   |   MSSIM    |
+| -----------     | --------    |   -----    |   -----    |
+|    __SSN__      | 27.20       |    0.8256  |   0.9069   |
+|    __SSNL__     | 27.25       |    0.8275  |   0.9083   |
+|    __MSN__      | 27.56       |    0.8362  |   0.9149   |
+|    __MSNL__     | __27.64__   | __0.8373__ | __0.9150__ |
+
+__SSN__: Single-Scale Network without long-skip connection 
+
+__SSNL__: Single-Scale Network with long-skip connection 
+
+__MSN__: Multi-Scale Network without long-skip connection 
+
+__MSNL__: Multi-Scale Network with long-skip connection 
 ## References
 
 Deep Multi-scale Convolutional Neural Network for Dynamic Scene Deblurring [[paper](http://openaccess.thecvf.com/content_cvpr_2017/papers/Nah_Deep_Multi-Scale_Convolutional_CVPR_2017_paper.pdf)]
