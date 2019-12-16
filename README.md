@@ -8,7 +8,7 @@ This project is to implement a multi-scale architecture for image deblurring.
 
  To run this project you need to setup the environment, download the dataset,  and then you can train and test the network models. I will show you step by step to run this project and I hope it is clear enough. 
 
-## Prerequiste
+## Prerequisite
 
 The project is tested on Ubuntu 16.04, GPU Titan XP. Note that one GPU is required to run the code. Otherwise, you have to modify code a little bit for using CPU. If  using CPU for training, it may too slow.   So I recommend you using GPU strong enough and about 12G RAM. 
 
